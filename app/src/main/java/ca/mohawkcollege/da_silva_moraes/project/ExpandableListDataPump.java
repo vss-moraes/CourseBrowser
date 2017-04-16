@@ -7,7 +7,7 @@ import java.util.List;
  * Created by vsant on 16-Apr-17.
  */
 
-public class ExpandabelListDataPump {
+public class ExpandableListDataPump {
     public static HashMap<String, List<String>> getData() {
         HashMap<String, List<String>> expandableListDetail = new HashMap<String, List<String>>();
 

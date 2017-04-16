@@ -79,8 +79,8 @@ public class DbHelper extends SQLiteOpenHelper{
         return semesters;
     }
 
-    public static List<String> getCoursesCodeAndName(String program, String semester){
-        List<String> courses = null;
+    public static List<Courses> getCoursesInformation(int program, int semester){
+        List<Courses> coursesList = new ArrayList<>();
 
         DbHelper dbHelper = new DbHelper(Project.getContext());
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -92,12 +92,22 @@ public class DbHelper extends SQLiteOpenHelper{
                         "AND semesterNum = ? " +
                         "ORDER BY courseCode;";
 
-        Cursor cursor = database.rawQuery(GET_COURSES, new String[] {program, semester});
+        Cursor cursor = database.rawQuery(GET_COURSES, new String[] {program + "", semester + ""});
+        Courses course = new Courses();
         while (cursor.moveToNext()){
-            String courseCode = cursor.getString(cursor.getColumnIndex("courseCode"));
-            String courseTitle = cursor.getString(cursor.getColumnIndex("courseTitle"));
+            course.set_id(cursor.getInt(cursor.getColumnIndex("_id")));
+            course.setProgram(program);
+            course.setSemesterNum(semester);
+            course.setCourseCode(cursor.getString(cursor.getColumnIndex("courseCode")));
+            course.setCourseTitle(cursor.getString(cursor.getColumnIndex("courseTitle")));
+            course.setCourseDescription(cursor.getString(cursor.getColumnIndex("courseDescription")));
+            course.setCourseOwner(cursor.getString(cursor.getColumnIndex("courseOwner")));
+            course.setOptional(cursor.getInt(cursor.getColumnIndex("optional")));
+            course.setHours(cursor.getInt(cursor.getColumnIndex("hours")));
+
+            coursesList.add(course);
         }
 
-        return courses;
+        return coursesList;
     }
 }

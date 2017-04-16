@@ -101,4 +101,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
+
+    public int getChildText(int groupPosition, final int childPosition){
+        return Integer.parseInt(getChild(groupPosition, childPosition).toString());
+    }
+
+    public int getHeaderTitle(int groupPosition){
+        return Integer.parseInt(getGroup(groupPosition).toString());
+    }
 }
