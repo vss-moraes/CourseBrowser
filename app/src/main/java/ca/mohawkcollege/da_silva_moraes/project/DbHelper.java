@@ -1,8 +1,14 @@
 package ca.mohawkcollege.da_silva_moraes.project;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by da-silva-moraes on 11-Apr-17.
@@ -37,5 +43,61 @@ public class DbHelper extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion){
 
+    }
+
+    public static List<String> getProgramCodes(){
+        List<String> programs = new ArrayList<>();
+
+        DbHelper dbHelper = new DbHelper(Project.getContext());
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+
+        final String GET_PROGRAMS = "SELECT DISTINCT program FROM courses;";
+
+        Cursor cursor = database.rawQuery(GET_PROGRAMS, null);
+        while (cursor.moveToNext())
+            programs.add(cursor.getString(cursor.getColumnIndex("program")));
+
+        return programs;
+    }
+
+    public static List<String> getProgramSemesters(String program){
+        List<String> semesters = new ArrayList<>();
+
+        DbHelper dbHelper = new DbHelper(Project.getContext());
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+
+        final String GET_SEMESTERS =
+                "SELECT DISTINCT semesterNum " +
+                        "FROM courses WHERE " +
+                        "program = ?" +
+                        "ORDER BY semesterNum;";
+
+        Cursor cursor = database.rawQuery(GET_SEMESTERS, new String[] {program});
+        while (cursor.moveToNext())
+            semesters.add(cursor.getString(cursor.getColumnIndex("semesterNum")));
+
+        return semesters;
+    }
+
+    public static List<String> getCoursesCodeAndName(String program, String semester){
+        List<String> courses = null;
+
+        DbHelper dbHelper = new DbHelper(Project.getContext());
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+
+        final String GET_COURSES =
+                "SELECT courseCode, courseTitle " +
+                        "FROM courses " +
+                        "WHERE program = ? " +
+                        "AND semesterNum = ? " +
+                        "ORDER BY courseCode;";
+
+        Cursor cursor = database.rawQuery(GET_COURSES, new String[] {program, semester});
+        while (cursor.moveToNext()){
+            String courseCode = cursor.getString(cursor.getColumnIndex("courseCode"));
+            String courseTitle = cursor.getString(cursor.getColumnIndex("courseTitle"));
+        }
+
+        return courses;
     }
 }

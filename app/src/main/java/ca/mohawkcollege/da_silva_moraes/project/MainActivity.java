@@ -1,11 +1,18 @@
 package ca.mohawkcollege.da_silva_moraes.project;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ExpandableListView;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
@@ -16,11 +23,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.deleteDatabase(DbHelper.DATABASE_NAME);
-
         if(!databaseExists(this, DbHelper.DATABASE_NAME)){
             refreshDatabase(new View(this));
         }
+
+        HashMap<String, List<String>> listDataChild = ExpandabelListDataPump.getData();
+        List<String> listDataHeader = new ArrayList<>(listDataChild.keySet());
+
+        ExpandableListView programList = (ExpandableListView) findViewById(R.id.programList);
+        ExpandableListAdapter listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+
+        programList.setAdapter(listAdapter);
+
     }
 
     public void refreshDatabase(View view) {
@@ -34,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
     private static boolean databaseExists(Context context, String dbName){
         File dbFile = context.getDatabasePath(dbName);
