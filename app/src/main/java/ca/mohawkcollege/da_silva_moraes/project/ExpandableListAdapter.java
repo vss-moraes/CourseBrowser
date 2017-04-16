@@ -49,7 +49,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         TextView textListChild = (TextView) convertView.findViewById(R.id.lblListItem);
 
-        textListChild.setText(childText);
+        textListChild.setText(String.format("Semester %s", childText));
         return convertView;
     }
 
@@ -79,15 +79,15 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                              View convertView, ViewGroup parent) {
         String headerTitle = (String) getGroup(groupPosition);
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this.context
+            LayoutInflater inflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.list_group, null);
+            convertView = inflater.inflate(R.layout.list_group, null);
         }
 
         TextView lblListHeader = (TextView) convertView
                 .findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
-        lblListHeader.setText(headerTitle);
+        lblListHeader.setText(String.format("Program %s", headerTitle));
 
         return convertView;
     }
