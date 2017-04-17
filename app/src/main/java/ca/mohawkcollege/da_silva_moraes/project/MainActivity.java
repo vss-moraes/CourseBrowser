@@ -9,8 +9,9 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
+import android.widget.ListView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,10 +21,11 @@ import java.util.concurrent.ExecutionException;
 
 
 public class MainActivity extends AppCompatActivity
-        implements ExpandableListView.OnChildClickListener, ExpandableListView.OnItemClickListener{
+        implements ExpandableListView.OnChildClickListener, ListView.OnItemClickListener{
 
-    private ExpandableListView programList;
     private ExpandableListAdapter listAdapter;
+    private ArrayAdapter<String> adapter;
+    private int selectedProgram;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,25 +39,75 @@ public class MainActivity extends AppCompatActivity
         HashMap<String, List<String>> listDataChild = ExpandableListDataPump.getData();
         List<String> listDataHeader = new ArrayList<>(listDataChild.keySet());
 
-        programList = (ExpandableListView) findViewById(R.id.programList);
+        ExpandableListView programList = (ExpandableListView) findViewById(R.id.programList);
         listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
 
         programList.setAdapter(listAdapter);
         programList.setOnChildClickListener(this);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
     }
 
+    @Override
+    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+        selectedProgram = listAdapter.getHeaderTitle(groupPosition);
+        int semester = listAdapter.getChildText(groupPosition, childPosition);
+        ListView listView = (ListView) findViewById(R.id.coursesList);
+
+        List<String> courseNames = DatabaseQueries.getCourseNames(selectedProgram, semester);
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, courseNames);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
+
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String courseDescription = adapter.getItem(position);
+        String[] courseInfo;
+        if(courseDescription != null) {
+            courseInfo = courseDescription.split(": ");
+            Courses course = DatabaseQueries.getCourseInformation(courseInfo, selectedProgram);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Find out the current state of the drawer (open or closed)
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        boolean isOpen = drawerLayout.isDrawerOpen(GravityCompat.START);
+
+        // Handle item selection
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Home button - open or close the drawer
+                if (isOpen) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void refreshDatabase(View view) {
-        DownloadCourseInformation dl = new DownloadCourseInformation(this);
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        drawerLayout.closeDrawer(GravityCompat.START);
+
+        DownloadCourseInformation dl = new DownloadCourseInformation();
         String uri = "https://csunix.mohawkcollege.ca/~geczy/mohawkprograms.php";
         try {
-            String response = dl.execute(uri).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+            dl.execute(uri).get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
@@ -63,46 +115,5 @@ public class MainActivity extends AppCompatActivity
     private static boolean databaseExists(Context context, String dbName){
         File dbFile = context.getDatabasePath(dbName);
         return dbFile.exists();
-    }
-
-    @Override
-    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-//        int program = listAdapter.getHeaderTitle(groupPosition);
-//        int semester = listAdapter.getChildText(groupPosition, childPosition);
-//
-//        List<Courses> coursesList = DbHelper.getCoursesInformation(program, semester);
-
-        String toastText = listAdapter.getChildText(groupPosition, childPosition) + " " +
-                listAdapter.getHeaderTitle(groupPosition);
-        Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
-        return true;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        DrawerLayout mydrawerlayout = (DrawerLayout) findViewById(R.id.drawer);
-        mydrawerlayout.closeDrawer(GravityCompat.START);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        // Find out the current state of the drawer (open or closed)
-        DrawerLayout mydrawerlayout = (DrawerLayout) findViewById(R.id.drawer);
-        boolean isOpen = mydrawerlayout.isDrawerOpen(GravityCompat.START);
-
-        // Handle item selection
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Home button - open or close the drawer
-                if (isOpen == true) {
-                    mydrawerlayout.closeDrawer(GravityCompat.START);
-                } else {
-                    mydrawerlayout.openDrawer(GravityCompat.START);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }

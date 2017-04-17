@@ -11,17 +11,14 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by vsant on 16-Apr-17.
- */
 
-public class ExpandableListAdapter extends BaseExpandableListAdapter {
+class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private List<String> listDataHeader;
     private HashMap<String, List<String>> listDataChild;
 
-    public ExpandableListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listDataChild) {
+    ExpandableListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listDataChild) {
         this.context = context;
         this.listDataHeader = listDataHeader;
         this.listDataChild = listDataChild;
@@ -102,11 +99,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    public int getChildText(int groupPosition, final int childPosition){
+    int getChildText(int groupPosition, final int childPosition){
         return Integer.parseInt(getChild(groupPosition, childPosition).toString());
     }
 
-    public int getHeaderTitle(int groupPosition){
+    int getHeaderTitle(int groupPosition){
         return Integer.parseInt(getGroup(groupPosition).toString());
     }
 }

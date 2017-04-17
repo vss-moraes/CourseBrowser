@@ -8,11 +8,17 @@
     android:id="@+id/drawer"
     tools:context="ca.mohawkcollege.da_silva_moraes.project.MainActivity">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/myframe">
-    </FrameLayout>
+        android:id="@+id/mainLayout">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/coursesList"/>
+    </RelativeLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,11 +34,19 @@
             android:paddingTop="20dp"
             app:srcCompat="@drawable/mohawk_logo" />
 
+        <Button
+            android:id="@+id/refreshDatabase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/refresh_database"
+            android:onClick="refreshDatabase"/>
+
         <ExpandableListView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="start"
             android:background="#FFFFFF"
             android:id="@+id/programList" />
+
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

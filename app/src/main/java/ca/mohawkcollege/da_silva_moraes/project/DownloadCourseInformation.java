@@ -1,6 +1,5 @@
 package ca.mohawkcollege.da_silva_moraes.project;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -16,17 +15,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by da-silva-moraes on 11-Apr-17.
- */
+class DownloadCourseInformation extends AsyncTask<String, Void, String> {
 
-public class DownloadCourseInformation extends AsyncTask<String, Void, String> {
-
-    private Activity myActivity;
-
-    public DownloadCourseInformation(Activity inActivity){
-        myActivity = inActivity;
-    }
+    DownloadCourseInformation(){}
 
     @Override
     protected String doInBackground(String... params) {
@@ -43,7 +34,7 @@ public class DownloadCourseInformation extends AsyncTask<String, Void, String> {
                 InputStream inputStream = new BufferedInputStream(connection.getInputStream());
                 BufferedReader bufferedReader =
                         new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String line = null;
+                String line;
                 while((line = bufferedReader.readLine()) != null){
                     results += line;
                 }
