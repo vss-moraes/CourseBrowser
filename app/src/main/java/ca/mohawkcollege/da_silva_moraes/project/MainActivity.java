@@ -7,7 +7,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import static ca.mohawkcollege.da_silva_moraes.project.FeedReaderContract.*;
 
 
 public class MainActivity extends AppCompatActivity
@@ -66,8 +67,8 @@ public class MainActivity extends AppCompatActivity
         String courseDescription = adapter.getItem(position);
 
         Intent intent = new Intent(this, CourseDescription.class);
-        intent.putExtra("courseDescription", courseDescription);
-        intent.putExtra("program", selectedProgram);
+        intent.putExtra(FeedEntry.COLUMN_NAME_DESCRIPTION, courseDescription);
+        intent.putExtra(FeedEntry.COLUMN_NAME_PROGRAM, selectedProgram);
         startActivity(intent);
     }
 
@@ -101,10 +102,8 @@ public class MainActivity extends AppCompatActivity
         String uri = "https://csunix.mohawkcollege.ca/~geczy/mohawkprograms.php";
         try {
             response = dl.execute(uri).get();
-            Log.i("Response: ", response);
 
             if (response != null) {
-                Log.i("Creating List", "list");
                 createExpandableList();
             }
         } catch (InterruptedException | ExecutionException  e) {
@@ -125,7 +124,6 @@ public class MainActivity extends AppCompatActivity
 
     private static boolean databaseExists(Context context, String dbName){
         File dbFile = context.getDatabasePath(dbName);
-        Log.i("Database exists: ", dbFile.exists() + "");
         return dbFile.exists();
     }
 }

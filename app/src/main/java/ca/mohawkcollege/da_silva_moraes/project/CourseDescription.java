@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static ca.mohawkcollege.da_silva_moraes.project.FeedReaderContract.*;
+
 public class CourseDescription extends AppCompatActivity {
 
     @Override
@@ -18,8 +20,8 @@ public class CourseDescription extends AppCompatActivity {
         setContentView(R.layout.activity_course_description);
 
         Bundle bundle = getIntent().getExtras();
-        String description = bundle.getString("courseDescription");
-        int program = bundle.getInt("program");
+        String description = bundle.getString(FeedEntry.COLUMN_NAME_DESCRIPTION);
+        int program = bundle.getInt(FeedEntry.COLUMN_NAME_PROGRAM);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
