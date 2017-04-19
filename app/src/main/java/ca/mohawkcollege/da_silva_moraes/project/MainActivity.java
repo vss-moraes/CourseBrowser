@@ -1,11 +1,13 @@
 package ca.mohawkcollege.da_silva_moraes.project;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,21 +36,12 @@ public class MainActivity extends AppCompatActivity
 
         if(!databaseExists(this, DbHelper.DATABASE_NAME)){
             refreshDatabase(new View(this));
-        }
-
-        HashMap<String, List<String>> listDataChild = ExpandableListDataPump.getData();
-        List<String> listDataHeader = new ArrayList<>(listDataChild.keySet());
-
-        ExpandableListView programList = (ExpandableListView) findViewById(R.id.programList);
-        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
-
-        programList.setAdapter(listAdapter);
-        programList.setOnChildClickListener(this);
+        } else
+            createExpandableList();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
-
     }
 
     @Override
@@ -71,11 +64,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String courseDescription = adapter.getItem(position);
-        String[] courseInfo;
-        if(courseDescription != null) {
-            courseInfo = courseDescription.split(": ");
-            Courses course = DatabaseQueries.getCourseInformation(courseInfo, selectedProgram);
-        }
+
+        Intent intent = new Intent(this, CourseDescription.class);
+        intent.putExtra("courseDescription", courseDescription);
+        intent.putExtra("program", selectedProgram);
+        startActivity(intent);
     }
 
     @Override
@@ -104,16 +97,35 @@ public class MainActivity extends AppCompatActivity
         drawerLayout.closeDrawer(GravityCompat.START);
 
         DownloadCourseInformation dl = new DownloadCourseInformation();
+        String response;
         String uri = "https://csunix.mohawkcollege.ca/~geczy/mohawkprograms.php";
         try {
-            dl.execute(uri).get();
-        } catch (InterruptedException | ExecutionException e) {
+            response = dl.execute(uri).get();
+            Log.i("Response: ", response);
+
+            if (response != null) {
+                Log.i("Creating List", "list");
+                createExpandableList();
+            }
+        } catch (InterruptedException | ExecutionException  e) {
             e.printStackTrace();
         }
     }
 
+    public void createExpandableList(){
+        HashMap<String, List<String>> listDataChild = ExpandableListDataPump.getData();
+        List<String> listDataHeader = new ArrayList<>(listDataChild.keySet());
+
+        ExpandableListView programList = (ExpandableListView) findViewById(R.id.programList);
+        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+
+        programList.setAdapter(listAdapter);
+        programList.setOnChildClickListener(this);
+    }
+
     private static boolean databaseExists(Context context, String dbName){
         File dbFile = context.getDatabasePath(dbName);
+        Log.i("Database exists: ", dbFile.exists() + "");
         return dbFile.exists();
     }
 }

@@ -38,6 +38,32 @@ class DownloadCourseInformation extends AsyncTask<String, Void, String> {
                 while((line = bufferedReader.readLine()) != null){
                     results += line;
                 }
+
+                Gson gson = new Gson();
+                CourseList courses = gson.fromJson(results, CourseList.class);
+
+                if(courses != null){
+                    DbHelper dbHelper = new DbHelper(Project.getContext());
+                    SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+                    for(Courses course : courses){
+                        ContentValues values = new ContentValues();
+                        values.put("_id", course.get_id());
+                        values.put("program", course.getProgram());
+                        values.put("semesterNum", course.getSemesterNum());
+                        values.put("courseCode", course.getCourseCode());
+                        values.put("courseTitle", course.getCourseTitle());
+                        values.put("courseDescription", course.getCourseDescription());
+                        values.put("courseOwner", course.getCourseOwner());
+                        values.put("optional", course.getOptional());
+                        values.put("hours", course.getHours());
+
+                        long newRowId = database.replace("courses", null, values);
+
+                        Log.d("log", "New ID " + newRowId);
+                    }
+                }
+
             }
         } catch(IOException e){
             Log.d("Http status: ", statusCode + "");
@@ -47,30 +73,6 @@ class DownloadCourseInformation extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result){
-        Gson gson = new Gson();
-        CourseList courses = gson.fromJson(result, CourseList.class);
-
-        if(courses != null){
-            DbHelper dbHelper = new DbHelper(Project.getContext());
-            SQLiteDatabase database = dbHelper.getWritableDatabase();
-
-            for(Courses course : courses){
-                ContentValues values = new ContentValues();
-                values.put("_id", course.get_id());
-                values.put("program", course.getProgram());
-                values.put("semesterNum", course.getSemesterNum());
-                values.put("courseCode", course.getCourseCode());
-                values.put("courseTitle", course.getCourseTitle());
-                values.put("courseDescription", course.getCourseDescription());
-                values.put("courseOwner", course.getCourseOwner());
-                values.put("optional", course.getOptional());
-                values.put("hours", course.getHours());
-
-                long newRowId = database.replace("courses", null, values);
-
-                Log.d("log", "New ID " + newRowId);
-            }
-        }
 
     }
 }

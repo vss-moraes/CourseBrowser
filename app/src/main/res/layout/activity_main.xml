@@ -23,6 +23,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#FFFFFF"
         android:orientation="vertical"
         android:layout_gravity="start">
 
@@ -30,7 +31,6 @@
             android:id="@+id/imageView2"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:background="#FFFFFF"
             android:paddingTop="20dp"
             app:srcCompat="@drawable/mohawk_logo" />
 
@@ -38,6 +38,7 @@
             android:id="@+id/refreshDatabase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#FFFFFF"
             android:text="@string/refresh_database"
             android:onClick="refreshDatabase"/>
 
