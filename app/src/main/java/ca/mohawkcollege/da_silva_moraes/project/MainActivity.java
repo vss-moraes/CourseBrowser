@@ -1,3 +1,8 @@
+/*
+ * I, Vinicius da Silva Moraes, 000745570 certify that this material is my original work.
+ * No other person's work has been used without due acknowledgement.
+ */
+
 package ca.mohawkcollege.da_silva_moraes.project;
 
 import android.content.Context;
@@ -45,6 +50,9 @@ public class MainActivity extends AppCompatActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    /*
+     * Creates a list on the main activity when a semester from a program is selected
+     */
     @Override
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
         selectedProgram = listAdapter.getHeaderTitle(groupPosition);
@@ -62,6 +70,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /*
+     * Creates the Course Description Activity when a course is selected
+     */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String courseDescription = adapter.getItem(position);
@@ -72,16 +83,16 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    /*
+     * Handles the navigation drawer opening and closing when home button is clicked
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Find out the current state of the drawer (open or closed)
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         boolean isOpen = drawerLayout.isDrawerOpen(GravityCompat.START);
 
-        // Handle item selection
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Home button - open or close the drawer
                 if (isOpen) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                 } else {
@@ -93,6 +104,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /*
+     * Creates or refreshed the database, pulling data from the webservice
+     */
     public void refreshDatabase(View view) {
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -111,6 +125,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /*
+     * Populates the Expandable List based on data from the database
+     */
     public void createExpandableList(){
         HashMap<String, List<String>> listDataChild = ExpandableListDataPump.getData();
         List<String> listDataHeader = new ArrayList<>(listDataChild.keySet());
@@ -122,6 +139,9 @@ public class MainActivity extends AppCompatActivity
         programList.setOnChildClickListener(this);
     }
 
+    /*
+     * Checks if the database exists before creating the expandable list on the Navigation Drawer
+     */
     private static boolean databaseExists(Context context, String dbName){
         File dbFile = context.getDatabasePath(dbName);
         return dbFile.exists();
